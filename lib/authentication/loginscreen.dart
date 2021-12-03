@@ -1,5 +1,6 @@
 import 'package:floom/variables.dart';
 import 'package:flutter/material.dart';
+import 'package:firebase_auth/firebase_auth.dart';
 import 'package:flutter_gradient_colors/flutter_gradient_colors.dart';
 
 class LoginScreen extends StatefulWidget {
@@ -8,6 +9,8 @@ class LoginScreen extends StatefulWidget {
 }
 
 class _LoginScreenState extends State<LoginScreen> {
+  TextEditingController emailcontroller = TextEditingController();
+  TextEditingController passwordcontroller = TextEditingController();
   @override
   Widget build(BuildContext context) {
     return Scaffold(
@@ -56,6 +59,7 @@ class _LoginScreenState extends State<LoginScreen> {
                       child: TextField(
                         style: mystyle(18, Colors.black),
                         keyboardType: TextInputType.emailAddress,
+                        controller: emailcontroller,
                         decoration: InputDecoration(
                           hintText: "Email",
                           prefixIcon: Icon(Icons.email),
@@ -68,6 +72,7 @@ class _LoginScreenState extends State<LoginScreen> {
                       width: MediaQuery.of(context).size.width / 1.7,
                       child: TextField(
                         style: mystyle(18, Colors.black),
+                        controller: passwordcontroller,
                         keyboardType: TextInputType.emailAddress,
                         decoration: InputDecoration(
                           hintText: "Password",
@@ -76,6 +81,45 @@ class _LoginScreenState extends State<LoginScreen> {
                         ),
                       ),
                     ),
+                    const SizedBox(
+                      height: 40,
+                    ),
+                    InkWell(
+                      onTap: () {
+                        try {
+                          int count = 0;
+                          FirebaseAuth.instance.signInWithEmailAndPassword(
+                              email: emailcontroller.text,
+                              password: passwordcontroller.text);
+                          Navigator.popUntil(context, (route) {
+                            return count++ == 2;
+                          });
+                        } catch (e) {
+                          print(e);
+                          var snackbar = SnackBar(
+                              content: Text(
+                            e.toString(),
+                            style: mystyle(20),
+                          ));
+                          Scaffold.of(context).showSnackBar(snackbar);
+                        }
+                      },
+                      child: Container(
+                        width: MediaQuery.of(context).size.width / 2,
+                        height: 45,
+                        decoration: BoxDecoration(
+                          gradient: const LinearGradient(
+                              colors: GradientColors.beautifulGreen),
+                          borderRadius: BorderRadius.circular(20),
+                        ),
+                        child: Center(
+                          child: Text(
+                            "Sign In",
+                            style: mystyle(25, Colors.white),
+                          ),
+                        ),
+                      ),
+                    )
                   ],
                 )),
           )
